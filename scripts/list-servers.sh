@@ -27,7 +27,7 @@ console.log('|-------------|---------|-----------|');
 for (const [name, server] of Object.entries(config.mcpServers)) {
     const command = server.command || 'N/A';
     const args = server.args ? server.args.join(' ') : 'N/A';
-    console.log(`| ${name} | ${command} | ${args} |`);
+    console.log(\`| \${name} | \${command} | \${args} |\`);
 }
 "
 
