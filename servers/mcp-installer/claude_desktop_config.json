@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "testserver": {
+      "command": "python3",
+      "args": [
+        "/Users/chrisdavis/code/mcp-installer/fast_mcp_server.py"
+      ]
+    }
+  }
+}

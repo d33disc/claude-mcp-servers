@@ -1,0 +1,43 @@
+{
+  "mcpServers": {
+    "testserver": {
+      "env": {},
+      "command": "python3",
+      "args": [
+        "/Users/chrisdavis/code/mcp-workspace/servers/python-testserver/src/server.py"
+      ]
+    },
+    "sequential-thinking": {
+      "env": {},
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ]
+    },
+    "web-fetch": {
+      "env": {},
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-web-fetch"
+      ]
+    },
+    "vector-store": {
+      "env": {},
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-vector-store"
+      ]
+    },
+    "code-interpreter": {
+      "env": {},
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-code-interpreter"
+      ]
+    }
+  }
+}

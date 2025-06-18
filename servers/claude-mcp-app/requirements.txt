@@ -1,0 +1,9 @@
+# Core MCP package
+mcp>=1.6.0
+# Async support
+trio>=0.22.0
+# Data analysis
+pandas
+numpy
+# HTTP client for testing
+httpx>=0.24.0
