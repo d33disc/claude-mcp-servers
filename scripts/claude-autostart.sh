@@ -22,10 +22,16 @@ if [ ! -x "$LAUNCH_SCRIPT" ]; then
     chmod +x "$LAUNCH_SCRIPT" || handle_error "Could not make launch script executable"
 fi
 
-# Check if Claude Desktop is installed
-if ! osascript -e "exists application \"$CLAUDE_APP_NAME\"" >/dev/null 2>&1; then
-    handle_error "Claude Desktop application not found. Please install it first."
-    exit 1
+# Check if Claude Desktop is installed - only on macOS
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # First try default AppleScript method
+    if ! osascript -e "exists application \"$CLAUDE_APP_NAME\"" >/dev/null 2>&1; then
+        # Fallback method: check Applications folder
+        if [ ! -d "/Applications/Claude.app" ] && [ ! -d "$HOME/Applications/Claude.app" ]; then
+            echo "⚠️ Warning: Claude Desktop application not found in standard locations."
+            echo "Attempting to launch anyway..."
+        fi
+    fi
 fi
 
 # Check if Claude Desktop is already running

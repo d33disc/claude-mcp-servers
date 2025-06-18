@@ -1,6 +1,23 @@
 #!/bin/bash
 # Script to initialize MCP servers before starting Claude Desktop
 
+# Parse command line arguments
+DRY_RUN=0
+for arg in "$@"; do
+    case $arg in
+        --dry-run)
+            DRY_RUN=1
+            shift
+            ;;
+        --help)
+            echo "Usage: $0 [--dry-run] [--help]"
+            echo "  --dry-run  Check configuration without launching Claude Desktop"
+            echo "  --help     Show this help message"
+            exit 0
+            ;;
+    esac
+done
+
 # Fail on errors
 set -e
 
@@ -50,14 +67,25 @@ make config || handle_error "Failed to generate Claude configuration"
 echo "📊 Current MCP server status:"
 make status || echo "⚠️ Warning: Could not get server status, but continuing..."
 
-# Check if Claude Desktop app exists
-if ! osascript -e "exists application \"$CLAUDE_APP\"" >/dev/null 2>&1; then
-    handle_error "Claude Desktop application not found. Please install it first."
+# Check if Claude Desktop app exists - only on macOS
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # First try default AppleScript method
+    if ! osascript -e "exists application \"$CLAUDE_APP\"" >/dev/null 2>&1; then
+        # Fallback method: check Applications folder
+        if [ ! -d "/Applications/Claude.app" ] && [ ! -d "$HOME/Applications/Claude.app" ]; then
+            echo "⚠️ Warning: Claude Desktop application not found in standard locations."
+            echo "Attempting to launch anyway..."
+        fi
+    fi
 fi
 
-# Launch Claude Desktop
-echo "🚀 Starting Claude Desktop..."
-open -a "$CLAUDE_APP" || handle_error "Failed to open Claude Desktop"
+# Launch Claude Desktop unless in dry-run mode
+if [ $DRY_RUN -eq 0 ]; then
+    echo "🚀 Starting Claude Desktop..."
+    open -a "$CLAUDE_APP" || handle_error "Failed to open Claude Desktop"
+else
+    echo "🧪 Dry run complete - Claude Desktop would be launched here"
+fi
 
 echo "✅ Done! Claude Desktop should be starting with MCP servers configured."
 echo "If you encounter issues, run:"
