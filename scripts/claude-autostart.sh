@@ -1,15 +1,13 @@
 #!/bin/bash
 # Script to check if Claude Desktop is running and start it if not
 
+# Source helper functions
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+source "$SCRIPT_DIR/helper-functions.sh" || { echo "❌ Error: Could not source helper functions"; exit 1; }
+
 # Path to the launch script
 LAUNCH_SCRIPT="/Users/chrisdavis/Projects/MCP/scripts/launch-mcp-servers.sh"
 CLAUDE_APP_NAME="Claude"
-
-# Function to handle errors
-handle_error() {
-    echo "❌ Error: $1"
-    return 1
-}
 
 # Check if launch script exists
 if [ ! -f "$LAUNCH_SCRIPT" ]; then
@@ -22,20 +20,14 @@ if [ ! -x "$LAUNCH_SCRIPT" ]; then
     chmod +x "$LAUNCH_SCRIPT" || handle_error "Could not make launch script executable"
 fi
 
-# Check if Claude Desktop is installed - only on macOS
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    # First try default AppleScript method
-    if ! osascript -e "exists application \"$CLAUDE_APP_NAME\"" >/dev/null 2>&1; then
-        # Fallback method: check Applications folder
-        if [ ! -d "/Applications/Claude.app" ] && [ ! -d "$HOME/Applications/Claude.app" ]; then
-            echo "⚠️ Warning: Claude Desktop application not found in standard locations."
-            echo "Attempting to launch anyway..."
-        fi
-    fi
+# Check if Claude Desktop is installed
+if ! check_claude_installed "$CLAUDE_APP_NAME"; then
+    echo "⚠️ Warning: Claude Desktop application not found in standard locations."
+    echo "Attempting to launch anyway..."
 fi
 
 # Check if Claude Desktop is already running
-if ! pgrep -x "$CLAUDE_APP_NAME" > /dev/null; then
+if ! is_claude_running "$CLAUDE_APP_NAME"; then
     echo "Claude Desktop is not running. Starting with MCP servers..."
     # Run in background to prevent terminal from waiting
     "$LAUNCH_SCRIPT" &
